@@ -1,0 +1,100 @@
+-- database: ./Ecommerce.sql
+-- Table user
+CREATE TABLE user(
+    id_user int PRIMARY KEY,
+    nom varchar(100),
+    prenom varchar(100),
+    email varchar(100),
+    mot_de_passe varchar(255), 
+    numero_de_telephone varchar(10),
+    date_de_creation date
+);
+
+-- Table adresse
+CREATE TABLE adresse(
+    id_adresse int PRIMARY KEY,
+    id_user int,
+    adresse varchar(100),
+    ville varchar(100),
+    code_postal varchar(5),
+    pays varchar(100),
+    FOREIGN KEY (id_user) REFERENCES user(id_user) -- Relation user-adresse
+);
+
+-- Table produit
+CREATE TABLE produit(
+    id_produit int PRIMARY KEY,
+    nom varchar(100),
+    description varchar(300),
+    prix DECIMAL(10,2), 
+    quantite int,
+    categorie varchar(100)
+);
+
+-- Table panier
+CREATE TABLE panier(
+    id_panier int PRIMARY KEY,
+    id_user int,
+    FOREIGN KEY (id_user) REFERENCES user(id_user) -- Relation user-panier 
+);
+
+-- Table commande
+CREATE TABLE commande(
+    id_commande int PRIMARY KEY,
+    id_user int,
+    id_panier int,
+    statut varchar(150),
+    date_de_commande date,
+    date_de_livraison date,
+    FOREIGN KEY (id_user) REFERENCES user(id_user), -- Relation user-commande 
+    FOREIGN KEY (id_panier) REFERENCES panier(id_panier) -- Relation panier-commande 
+);
+
+-- Table facture
+CREATE TABLE facture(
+    id_facture int PRIMARY KEY,
+    id_commande int,
+    date_de_facturation date,
+    montant_total DECIMAL(10,2),
+    id_payement int,
+    FOREIGN KEY (id_commande) REFERENCES commande(id_commande), -- Relation commande-facture 
+    FOREIGN KEY (id_payement) REFERENCES payement(id_payement) -- Relation payement-facture 
+);
+
+-- Table photo
+CREATE TABLE photo(
+    id_photo int PRIMARY KEY,
+    lien varchar(200)
+);
+
+-- Table evaluation
+CREATE TABLE evaluation(
+    id_evaluation int PRIMARY KEY,
+    id_user int,
+    id_produit int,
+    note int,
+    commentaire varchar(500),
+    FOREIGN KEY (id_user) REFERENCES user(id_user), -- Relation user-evaluation 
+    FOREIGN KEY (id_produit) REFERENCES produit(id_produit) -- Relation produit-evaluation 
+);
+
+-- Table payement
+CREATE TABLE payement(
+    id_payement int PRIMARY KEY,
+    id_user int,
+    type varchar(100),
+    numero_de_carte varchar(16),  -- Doit être crypté lors de l'insertion
+    date_de_expiration date,
+    code_de_securite int,
+    FOREIGN KEY (id_user) REFERENCES user(id_user) -- Relation user-payement 
+);
+
+-- Table de jonction entre panier et produit 
+CREATE TABLE panier_produit(
+    id_panier int,
+    id_produit int,
+    quantite int,
+    PRIMARY KEY (id_panier, id_produit),
+    FOREIGN KEY (id_panier) REFERENCES panier(id_panier), -- Relation panier-produit 
+    FOREIGN KEY (id_produit) REFERENCES produit(id_produit)
+);
