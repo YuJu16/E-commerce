@@ -16,7 +16,6 @@ def connexion_bdd():
         return None
 
 def vider_tables(curseur):
-    # Vider les tables pour éviter les conflits de clés primaires
     curseur.execute("DELETE FROM panier_produit;")
     curseur.execute("DELETE FROM facture;")
     curseur.execute("DELETE FROM commande;")
@@ -26,7 +25,7 @@ def vider_tables(curseur):
     curseur.execute("DELETE FROM adresse;")
     curseur.execute("DELETE FROM produit;")
     curseur.execute("DELETE FROM user;")
-    curseur.execute("DELETE FROM panier;")  # Ajouté pour vider la table panier
+    curseur.execute("DELETE FROM panier;")  
 
 def remplir_tables():
     connexion = connexion_bdd()
@@ -34,10 +33,8 @@ def remplir_tables():
         try:
             curseur = connexion.cursor()
 
-            # Vider les tables avant de les remplir
             vider_tables(curseur)
 
-            # Données à insérer
             utilisateurs = [
                 (1, "Joeastar", "Johnny", "joeastar.johnny@gmail.com", hashMdp("mdp123"), "0123456789", "2021-01-01"),
                 (2, "Zepelli", "Gyoro", "zeppeli.gyoro@gmail.com", hashMdp("mdp456"), "0123456789", "2021-01-02"),
@@ -75,9 +72,9 @@ def remplir_tables():
             ]
 
             evaluations = [
-                (1, 1, 1, 5, "Très bon produit"),  # id_evaluation, id_user, id_produit, note, commentaire
-                (2, 1, 2, 4, "Bon produit"),        # Assurez-vous que id_produit existe
-                (3, 2, 1, 3, "Produit correct"),    # Vérifiez que id_user et id_produit existent
+                (1, 1, 1, 5, "Très bon produit"), 
+                (2, 1, 2, 4, "Bon produit"),
+                (3, 2, 1, 3, "Produit correct"),
             ]
 
 
@@ -99,52 +96,43 @@ def remplir_tables():
                 (3, "photo3.jpg"),
             ]
 
-            # Insertion des utilisateurs
             curseur.executemany("INSERT INTO user (id_user, nom, prenom, email, mot_de_passe, numero_de_telephone, date_de_creation) VALUES (?, ?, ?, ?, ?, ?, ?)", utilisateurs)
             print("Utilisateurs insérés.")
 
-            # Insertion des produits
             curseur.executemany("INSERT INTO produit (id_produit, nom, description, prix, quantite, categorie) VALUES (?, ?, ?, ?, ?, ?)", produits)
             print("Produits insérés.")
 
-            # Insertion des adresses
             curseur.executemany("INSERT INTO adresse (id_adresse, id_user, adresse, ville, code_postal, pays) VALUES (?, ?, ?, ?, ?, ?)", adresses)
             print("Adresses insérées.")
 
-            # Insertion des commandes
             curseur.executemany("INSERT INTO commande (id_commande, id_user, id_panier, statut, date_de_commande, date_de_livraison) VALUES (?, ?, ?, ?, ?, ?)", commandes)
             print("Commandes insérées.")
 
-            # Insertion des paniers
             curseur.executemany("INSERT INTO panier (id_panier, id_user) VALUES (?, ?)", paniers)
             print("Paniers insérés.")
 
-            # Insertion des factures
+
             curseur.executemany("INSERT INTO facture (id_facture, id_commande, date_de_facturation, montant_total) VALUES (?, ?, ?, ?)", factures)
             print("Factures insérées.")
 
-            # Insertion des évaluations
             curseur.executemany("INSERT INTO evaluation (id_evaluation, id_user, id_produit, note, commentaire) VALUES (?, ?, ?, ?, ?)", evaluations)
             print("Évaluations insérées.")
 
-            # Insertion des paniers_produits
             curseur.executemany("INSERT INTO panier_produit (id_panier, id_produit, quantite) VALUES (?, ?, ?)", paniers_produits)
             print("Paniers_produits insérés.")
 
-            # Insertion des paiements
             curseur.executemany("INSERT INTO payement (id_payement, id_user, type, numero_de_carte, date_de_expiration, code_de_securite) VALUES (?, ?, ?, ?, ?, ?)", paiements)
             print("Paiements insérés.")
 
-            # Insertion des photos
             curseur.executemany("INSERT INTO photo (id_photo, lien) VALUES (?, ?)", photos)
             print("Photos insérées.")
 
-            connexion.commit()  # Valider les changements
+            connexion.commit() 
             print("Toutes les données ont été insérées avec succès.")
         except sqlite3.IntegrityError as e:
             print("Erreur lors du remplissage des tables :", e)
         finally:
-            connexion.close()  # Fermer la connexion
+            connexion.close()
 
 if __name__ == "__main__":
     remplir_tables()
